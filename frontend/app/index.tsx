@@ -1,10 +1,15 @@
-import { Text, View } from "react-native";
-import "./global.css";
+import React, { useEffect } from "react";
+import { View, Text } from "react-native";
+import { db } from "../src/firebase";
 
-export default function Index() {
+export default function HomeScreen() {
+  useEffect(() => {
+    console.log("Firebase project ID:", db.app.options.projectId);
+  }, []);
+
   return (
-    <View className="flex-1 items-center justify-center bg-accent">
-      <Text className="text-5xl text-primary font-bold">Home</Text>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text style={{ fontSize: 18 }}>DreamScapes + Firebase ✅</Text>
     </View>
   );
 }
