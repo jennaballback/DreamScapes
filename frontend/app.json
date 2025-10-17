@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "DreamScapes",
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,41 +9,49 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dreamscapes.app"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/highlight.png"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "package": "com.dreamscapes.app",
+      "permissions": [],
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/highlight.png"
     },
+
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/highlight.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
+          "dark": { "backgroundColor": "#000000"}
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyCWcsoy2s1RDRYs5yUnPZ-NtTH0aoRx54g",
+      "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "dreamscapes-f76f6.firebaseapp.com",
+      "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "dreamscapes-f76f6",
+      "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "dreamscapes-f76f6.firebasestorage.app",
+      "EXPO_PUBLIC_FIREBASE_SENDER_ID": "452477464932",
+      "EXPO_PUBLIC_FIREBASE_APP_ID": "1:452477464932:web:ac8712b27d930e9e6c6a71",
+      "EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID": "G-CKLMTRNT2H"
+      }
   }
 }
