@@ -1,7 +1,8 @@
 import { Tabs } from "expo-router";
 import React from 'react';
-import { Image, ImageBackground, Text } from "react-native";
+import { Image, ImageBackground, Text, View } from "react-native";
 import {images} from "@/assets/constants/images";
+import {icons} from "@/assets/constants/icons"
 
 
 const TabIcon = ({ focused, icon, title}: any) => {
@@ -21,6 +22,13 @@ const TabIcon = ({ focused, icon, title}: any) => {
             </>
         )
     }
+
+    return (
+        <View className="size-full justify-center items-center mt-4 rounded-full">
+            <Image source={icon} tintColor="#A8B5DB"
+            className="size-5" />
+        </View>
+    )
 }
 
 const _Layout = () => {
@@ -46,7 +54,13 @@ const _Layout = () => {
                 name="saved"
                 options={{
                     title: 'Saved',
-                    headerShown: false
+                    headerShown: false,
+                    tabBarIcon: ({focused}) => (
+                        <TabIcon
+                            focused={focused}
+                            icon={icons.save}
+                            title="Saved"/>
+                    )
                 }}
             />
             <Tabs.Screen
