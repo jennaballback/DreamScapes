@@ -35,19 +35,52 @@ const _Layout = () => {
     //instead of returning a View we are going to return using tabs
     //this one hides the file name of the tsx file
     return (
-        <Tabs>
+        <Tabs
+        screenOptions={{
+            tabBarShowLabel: false,
+            tabBarItemStyle: {
+                width: "100%",
+                height: "100%",
+                justifyContent: 'center',
+                alignItems: 'center'
+            },
+            tabBarStyle: {
+                backgroundColor: '#0f0D23',
+                borderRadius: 50,
+                marginHorizontal: 20,
+                marginBottom: 36,
+                height: 52,
+                position:'absolute',
+                overflow: 'hidden',
+                borderColor: '0f0d23',
+                borderWidth: 1
+            }
+        }}
+        >
             <Tabs.Screen
                 name = "index"
                 options={{
                     title: 'Home',
-                    headerShown: false
+                    headerShown: false,
+                    tabBarIcon: ({focused}) => (
+                        <TabIcon
+                            focused={focused}
+                            icon={icons.home}
+                            title="Home"/>
+                    )
                 }}
             />
             <Tabs.Screen
                 name="search"
                 options={{
                     title: 'Search',
-                    headerShown: false
+                    headerShown: false,
+                    tabBarIcon: ({focused}) => (
+                        <TabIcon
+                            focused={focused}
+                            icon={icons.search}
+                            title="Search"/>
+                    )
                 }}
             />
             <Tabs.Screen
@@ -67,7 +100,13 @@ const _Layout = () => {
                 name="profile"
                 options={{
                     title: 'Profile',
-                    headerShown: false
+                    headerShown: false,
+                    tabBarIcon: ({focused}) => (
+                        <TabIcon
+                            focused={focused}
+                            icon={icons.person}
+                            title="Profile"/>
+                    )
                 }}
             />
         </Tabs>

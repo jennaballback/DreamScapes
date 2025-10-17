@@ -1,18 +1,12 @@
-// import "../global.css";
+
+import "../global.css";
 
 
-// export default function HomeScreen (){
-//   return(
-//     <View className="flex-1 items-center justify-center bg-accent">
-//       <Text className="text-5xl text-primary font-bold">Home</Text>
-//     </View>
-//   );
-// }
 
 
 import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from "react-native";
-import { db } from "../../src/firebase";
+import { db } from "@/src/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
 export default function HomeScreen() {
@@ -82,7 +76,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: "center",
-    padding: 40,
+    padding: 20,
     backgroundColor: "#fafafa",
   },
   center: {
