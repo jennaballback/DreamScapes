@@ -7,21 +7,18 @@ export default function RootLayout() {
 
   //The headerShow is firstly how we get rid of that for tabs
   //This one hides the file name of (tabs) folder
-  return <Stack> 
-    <Stack.Screen
-      name="(tabs)"
-      options={{headerShown: false}}
-      />
-    <Stack.Screen
-      name="movie/[id]"
-      options={{ headerShown: false}}
-    />
-
-  </Stack>
-  
   return (
     <AuthProvider>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack> 
+          <Stack.Screen
+            name="(tabs)"
+            options={{headerShown: false}}
+            />
+          <Stack.Screen
+            name="movie/[id]"
+            options={{ headerShown: false}}
+          />
+      </Stack>
     </AuthProvider>
   );
 }
