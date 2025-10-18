@@ -1,9 +1,5 @@
 
 import "../global.css";
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from "react-native";
 import { db } from "@/src/firebase";
@@ -71,6 +67,7 @@ export default function HomeScreen() {
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
