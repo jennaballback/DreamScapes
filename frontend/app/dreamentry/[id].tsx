@@ -1,7 +1,7 @@
 
 import { useLocalSearchParams } from 'expo-router';
 import { View, Text, TouchableOpacity } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+// import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native"; // optional: nice back icon
 
 export default function DreamEntryScreen() {
