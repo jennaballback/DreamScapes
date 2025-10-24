@@ -5,8 +5,15 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Redirect } from "expo-router";
 import { useAuth } from "../../src/context/AuthContext";
 
+
+const user = {
+  displayName : 'jerry',
+  email : 'jerry@gmail.com'
+}
+
 export default function Home() {
-  const { user, initializing, signOut } = useAuth();
+  // const { user, initializing, signOut } = useAuth();
+  const { initializing, signOut } = useAuth();
 
   // Show a spinner while Firebase restores the session
   if (initializing) {
@@ -18,7 +25,7 @@ export default function Home() {
   }
 
   // Not logged in? send to /login
-  if (!user) return <Redirect href="/login" />;
+  //if (!user) return <Redirect href="/login" />;
 
   // Logged in view
   return (

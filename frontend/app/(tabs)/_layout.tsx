@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs, router } from "expo-router";
 import React from 'react';
 import { Image, ImageBackground, Text, View } from "react-native";
 import {images} from "@/assets/constants/images";
@@ -80,6 +80,19 @@ const _Layout = () => {
                             focused={focused}
                             icon={icons.search}
                             title="Search"/>
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="create"
+                options={{
+                    title: 'Create',
+                    headerShown: false,
+                    tabBarIcon: ({focused}) => (
+                        <TabIcon
+                            focused={focused}
+                            icon={icons.plus}
+                            title="Create"/>
                     )
                 }}
             />

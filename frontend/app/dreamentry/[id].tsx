@@ -7,14 +7,14 @@ export default function DreamEntryScreen() {
   const router = useRouter();
 
   return (
-    <View className="flex-1 bg-gray-100 p-4">
+    <View className="flex-1 mt-12 bg-gray-100 p-4">
       {/* Header with back button */}
       <View className="flex-row items-center mb-6">
         <TouchableOpacity
           onPress={() => router.back()}
           className="mr-3 p-2 bg-white rounded-full shadow"
         >
-          <ArrowLeft size={20} color="black" />
+          <ArrowLeft size={20} color="blue" />
         </TouchableOpacity>
         <Text className="text-xl font-bold text-gray-800">Dream Entry {id}</Text>
       </View>
