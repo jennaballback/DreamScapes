@@ -33,7 +33,7 @@ const ProfileScreen = () => {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       className='mb-4 p-4 bg-blue-100 rounded-lg shadow'
-      onPress={() => router.push(`../dreamentry/${item.id}`)}
+      onPress={() => router.push(`/dreamentry/${item.id}`)}
       >
       <Text className="text-gray-800 font-semibold">{item.title}</Text>
       <Text className="text-gray-500 mt-1">{item.content}</Text>
