@@ -9,7 +9,6 @@ import { db } from "../../src/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 import type { UserProfile } from "../../src/types/UserProfile";
 
-
 const user = {
   displayName : 'jerry',
   email : 'jerry@gmail.com'
@@ -20,7 +19,7 @@ export default function Home() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
-  // When user is logged in, subscribe to their profile doc
+  // Subscribe to the user's profile in Firestore
   useEffect(() => {
     if (!user) {
       setProfile(null);
@@ -36,13 +35,8 @@ export default function Home() {
     return unsub;
   }, [user]);
 
-  // Wait for Firebase to restore session or finish profile read
+  // Show loading screen while Firebase restores session or profile loads
   if (initializing || loadingProfile) {
-  // const { user, initializing, signOut } = useAuth();
-  const { initializing, signOut } = useAuth();
-
-  // Show a spinner while Firebase restores the session
-  if (initializing) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <ActivityIndicator />
@@ -50,10 +44,10 @@ export default function Home() {
     );
   }
 
-  // Not logged in? send to /login
-  //if (!user) return <Redirect href="/login" />;
+  // Redirect to /login if no user
+  if (!user) return <Redirect href="/login" />;
 
-  // Logged in view
+  // Logged-in view
   return (
     <View
       style={{
@@ -73,7 +67,8 @@ export default function Home() {
       </Text>
 
       <Text style={{ textAlign: "center", opacity: 0.8 }}>
-        replace this screen with your feed / tabs, or redirect to <Text style={{ fontWeight: "700" }}>(tabs)</Text> after login.
+        replace this screen with your feed / tabs, or redirect to{" "}
+        <Text style={{ fontWeight: "700" }}>(tabs)</Text> after login.
       </Text>
 
       <TouchableOpacity
