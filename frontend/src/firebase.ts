@@ -1,55 +1,39 @@
-// frontend/src/firebase.ts
-
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+// src/firebase.ts
+import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getAuth, initializeAuth, browserLocalPersistence, setPersistence } from "firebase/auth";
+import { getReactNativePersistence } from "firebase/auth/react-native";
 import { getFirestore } from "firebase/firestore";
-import Constants from "expo-constants";
 
-/** Shape of the values you defined in app.json/app.config.js under expo.extra */
-interface FirebaseExtra {
-  EXPO_PUBLIC_FIREBASE_API_KEY: string;
-  EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: string;
-  EXPO_PUBLIC_FIREBASE_PROJECT_ID: string;
-  EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: string; // may be *.firebasestorage.app or *.appspot.com
-  EXPO_PUBLIC_FIREBASE_SENDER_ID: string;
-  EXPO_PUBLIC_FIREBASE_APP_ID: string;
-  EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID?: string;
-}
-
-/** Read Expo config at runtime (SDK 50+: expoConfig; older runtimes: manifest) */
-const extra: Partial<FirebaseExtra> =
-  (Constants.expoConfig?.extra as Partial<FirebaseExtra>) ||
-  (Constants.manifest?.extra as Partial<FirebaseExtra>) ||
-  {};
-
-/**
- * Your Firebase configuration comes from the Firebase Console.
- * These environment variables are stored safely in your app.json
- * and accessed through process.env.EXPO_PUBLIC_...
- */
 const firebaseConfig = {
-  apiKey:
-    process.env.EXPO_PUBLIC_FIREBASE_API_KEY || extra.EXPO_PUBLIC_FIREBASE_API_KEY,
-  authDomain:
-    process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN || extra.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId:
-    process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID || extra.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket:
-    process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET || extra.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId:
-    process.env.EXPO_PUBLIC_FIREBASE_SENDER_ID || extra.EXPO_PUBLIC_FIREBASE_SENDER_ID,
-  appId:
-    process.env.EXPO_PUBLIC_FIREBASE_APP_ID || extra.EXPO_PUBLIC_FIREBASE_APP_ID,
-  measurementId:
-    process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID || extra.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyCWcsoy2s1RDRYs5yUnPZ-NtTH0aoRx54g",
+  authDomain: "dreamscapes-f76f6.firebaseapp.com",
+  projectId: "dreamscapes-f76f6",
+  storageBucket: "dreamscapes-f76f6.firebasestorage.app",
+  messagingSenderId: "452477464932",
+  appId: "1:452477464932:web:ac8712b27d930e9e6c6a71",
 };
 
-// TEMP sanity check (remove later)
-console.log("Firebase config check:", firebaseConfig);
+const app: FirebaseApp = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 
-// Initialize Firebase app only once (avoids "app already initialized" error)
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+// Auth (different init for native vs web)
+let auth = getAuth(app);
+if (Platform.OS !== "web") {
+  // React Native needs initializeAuth with AsyncStorage persistence
+  try {
+    auth = initializeAuth(app, {
+      persistence: getReactNativePersistence(AsyncStorage),
+    });
+  } catch {
+    // initializeAuth may be called twice in dev; fall back to getAuth
+    auth = getAuth(app);
+  }
+} else {
+  // Web persistence (don’t use top-level await)
+  setPersistence(auth, browserLocalPersistence).catch(() => {});
+}
 
-// Export Firebase services you’ll use
-export const auth = getAuth(app);
 export const db = getFirestore(app);
+export { auth, app };
+
