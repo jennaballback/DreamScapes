@@ -43,7 +43,7 @@ export default function Home() {
       </Text>
 
       <Text style={{ textAlign: "center" }}>
-        you’re logged in. replace this with your feed or “test users list” screen.
+        you’re logged in. This is a temperary sceen.
       </Text>
 
       <TouchableOpacity
