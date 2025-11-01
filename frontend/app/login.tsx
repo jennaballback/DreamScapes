@@ -11,7 +11,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // if already logged in, bounce to home
+  // if already logged in, go home
   useEffect(() => {
     if (user) router.replace("/");
   }, [user]);
@@ -22,13 +22,14 @@ export default function Login() {
     }
     try {
       setLoading(true);
-      await signInWithEmail(email.trim(), password);
-      // onAuthStateChanged will redirect via effect above
-    } catch (e: any) {
-      Alert.alert("Login failed", e.message ?? "Check your credentials.");
-    } finally {
-      setLoading(false);
-    }
+    await signInWithEmail(email.trim(), password);
+    Alert.alert("Logged in", "Auth succeeded."); // temp feedback
+  } catch (e: any) {
+    console.log("LOGIN ERROR:", e);
+    Alert.alert("Login failed", e?.message ?? "Unknown error");
+  } finally {
+    setLoading(false);
+  }
   };
 
   return (
