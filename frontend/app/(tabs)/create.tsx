@@ -4,12 +4,16 @@ import { useRouter } from "expo-router";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/src/firebase";
 import { useAuth } from "@/src/context/AuthContext";
+import DreamInterpreter from "../DreamInterpreter";
 
 const Create = () => {
   const router = useRouter();
   const { initializing } = useAuth();
   const [addData, setAddData] = useState("");
+  const [addTitle, setAddTitle] = useState("");
   const [loading, setLoading] = useState(false);
+  const [interpretation, setInterpretation] = useState<string>("");
+
 
   const user = {
     displayName : 'Anna',
@@ -23,15 +27,24 @@ const Create = () => {
   const addField = async () => {
     if (!addData.trim()) return;
 
+
+//This is where we would do the interpretation step and get the interpretation back
+//Some call to the LLM, probably via a component made out of it
+//set the value that returns equal to interpretation value
+
     setLoading(true);
     try {
       await addDoc(collection(db, tableName.tName), {
+        title: addTitle || "Untitlted",
         dream_text: addData,
+        interpretation: interpretation || "N/A",
         created_at: serverTimestamp(),
         user: "user/user001",
         public: true,
       });
       setAddData("");
+      setAddTitle("");
+      setInterpretation("");
       router.back();
     } catch (err) {
       console.log("Error adding entry:", err);
@@ -61,6 +74,18 @@ const Create = () => {
             <Text className="text-xl font-semibold text-gray-800">
               New Dream Entry
             </Text>
+            {/* Title Input*/}
+            <View>
+                <TextInput
+                className="text-base text-gray-800"
+                placeholder="Untitled"
+                placeholderTextColor="#9ca3af"
+                multiline
+                autoFocus
+                value={addTitle}
+                onChangeText={setAddTitle}
+              />
+              </View>
             <View className="w-10" />
           </View>
 
@@ -76,6 +101,11 @@ const Create = () => {
               onChangeText={setAddData}
             />
           </View>
+          {/*Interpretation Being sent*/}
+          <DreamInterpreter
+            dreamText={addData}
+            onInterpretation={(result) => setInterpretation(result)}
+          />
 
           {/* Save Button */}
           <TouchableOpacity
