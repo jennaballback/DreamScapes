@@ -60,7 +60,7 @@ const user = {
 }
 
 export default function Home() {
-  const { user, initializing, signOut } = useAuth();
+  const {  initializing, signOut } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
@@ -80,17 +80,17 @@ export default function Home() {
     return unsub;
   }, [user]);
 
-  // Show loading screen while Firebase restores session or profile loads
-  if (initializing || loadingProfile) {
-    return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
+  // // Show loading screen while Firebase restores session or profile loads
+  // if (initializing || loadingProfile) {
+  //   return (
+  //     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+  //       <ActivityIndicator />
+  //     </View>
+  //   );
+  // }
 
-  // Redirect to /login if no user
-  if (!user) return <Redirect href="/login" />;
+  // // Redirect to /login if no user
+  // if (!user) return <Redirect href="/login" />;
 
   // Logged-in view
   return (
@@ -112,8 +112,8 @@ export default function Home() {
       </Text>
 
       <Text style={{ textAlign: "center", opacity: 0.8 }}>
-        replace this screen with your feed / tabs, or redirect to{" "}
-        <Text style={{ fontWeight: "700" }}>(tabs)</Text> after login.
+        this screen will be our feed once it's implemented{" "}
+         after login.
       </Text>
 
       <TouchableOpacity
