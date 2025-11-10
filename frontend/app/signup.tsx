@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { useAuth } from "../src/context/AuthContext";
-import { signUpWithEmail } from "../src/services/auth";
+import { signUpWithEmail } from "../src/ts/auth";
 import type { InterpretationPref } from "../src/types/UserProfile";
 
 export default function SignUp() {
