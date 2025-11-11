@@ -1,78 +1,59 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
-import { Link, useRouter } from "expo-router";
-import { useAuth } from "../src/context/AuthContext";
-import { signInWithEmail } from "../src/services/auth";
+import React, { useState } from "react";
+import { View, Text, TextInput, Pressable } from "react-native";
+import { useRouter } from "expo-router";
+import { useDbAuth } from "../src/context/AuthContext";
 
 export default function Login() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { signIn } = useDbAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // if already logged in, go home
-  useEffect(() => {
-    if (user) router.replace("/");
-  }, [user]);
-
-  const onLogin = async () => {
-    if (!email || !password) {
-      return Alert.alert("Missing info", "Please enter email and password.");
-    }
+  const onSubmit = async () => {
+    setErr(""); setLoading(true);
     try {
-      setLoading(true);
-    await signInWithEmail(email.trim(), password);
-    Alert.alert("Logged in", "Auth succeeded."); // temp feedback
-  } catch (e: any) {
-    console.log("LOGIN ERROR:", e);
-    Alert.alert("Login failed", e?.message ?? "Unknown error");
-  } finally {
-    setLoading(false);
-  }
+      await signIn(email, password);      // dev-only
+      router.replace("/(tabs)");          // go to tabs home
+    } catch (e: any) {
+      setErr(e?.message ?? "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <View style={{ flex: 1, padding: 24, justifyContent: "center", gap: 12 }}>
-      <Text style={{ fontSize: 28, fontWeight: "700", marginBottom: 8 }}>
-        DreamScapes
-      </Text>
+    <View style={{ flex:1, padding:24, justifyContent:"center", gap:12 }}>
+      <Text style={{ fontSize:24, fontWeight:"700" }}>Login</Text>
+
       <TextInput
         placeholder="Email"
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
-        style={{ borderWidth: 1, borderRadius: 12, padding: 12 }}
+        style={{ borderWidth:1, borderColor:"#ccc", borderRadius:8, padding:12 }}
       />
       <TextInput
         placeholder="Password"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
-        style={{ borderWidth: 1, borderRadius: 12, padding: 12 }}
+        style={{ borderWidth:1, borderColor:"#ccc", borderRadius:8, padding:12 }}
       />
 
-      <TouchableOpacity
-        onPress={onLogin}
+      {err ? <Text style={{ color:"crimson" }}>{err}</Text> : null}
+
+      <Pressable
+        onPress={onSubmit}
         disabled={loading}
-        style={{ backgroundColor: "#111827", padding: 14, borderRadius: 12, alignItems: "center" }}
+        style={{ backgroundColor:"#111827", padding:12, borderRadius:10, opacity: loading ? 0.7 : 1 }}
       >
-        <Text style={{ color: "white", fontWeight: "600" }}>
-          {loading ? "Logging in..." : "Log In"}
+        <Text style={{ color:"white", textAlign:"center", fontWeight:"600" }}>
+          {loading ? "Signing in..." : "Sign in"}
         </Text>
-      </TouchableOpacity>
-
-      <Link href="/forgot" style={{ textAlign: "center", marginTop: 8 }}>
-        Forgot password?
-      </Link>
-
-      <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 12 }}>
-        <Text>New here? </Text>
-        <Link href="/signup" style={{ fontWeight: "700" }}>
-          Create an account
-        </Link>
-      </View>
+      </Pressable>
     </View>
   );
 }

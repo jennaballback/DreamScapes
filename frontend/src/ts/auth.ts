@@ -1,4 +1,4 @@
-import {
+/*import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -64,3 +64,4 @@ export async function signInWithEmail(email: string, password: string) {
 export function resetPassword(email: string) {
   return sendPasswordResetEmail(auth, email);
 }
+*/
