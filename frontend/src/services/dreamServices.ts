@@ -2,7 +2,7 @@
 
 import { interpretDream, InterpretationResponse } from '../ollama';
 import { UserContext, DreamEntry } from '../utils/dreamSchema';
-
+ 
 export async function processDream(
     user: UserContext,
     dream: DreamEntry
