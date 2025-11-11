@@ -242,7 +242,7 @@ export default function DreamChatScreen() {
       </View>
     </View>
   );
-}
+} 
 
 
 // --- STYLESHEET (Includes new section styles for structured output) ---

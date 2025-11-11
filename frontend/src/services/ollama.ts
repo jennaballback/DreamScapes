@@ -76,4 +76,4 @@ export async function interpretDream(user: UserContext, dream: DreamEntry): Prom
         // Throw a specific error if the LLM output can't be parsed
         throw new Error("LLM returned non-parsable output. Check prompt instructions and model.");
     }
-}
+} 

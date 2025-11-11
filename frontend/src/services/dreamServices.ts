@@ -12,4 +12,4 @@ export async function processDream(
     console.log("Dream interpretation result:", result);
 
     return result;
-}
+} 
