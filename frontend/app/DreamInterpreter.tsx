@@ -8,7 +8,7 @@ import { processDream } from '../src/services/dreamServices';
 import { UserContext, DreamEntry } from '../src/utils/dreamSchema';
 import { InterpretationResponse } from '../src/services/ollama';
 // -----------------------------------------------------------------
-
+ 
 // --- HELPER FUNCTION: Safely get summary for history display ---
 // This handles both old plain text responses and new structured JSON responses.
 const getEntrySummary = (responseText: string): string => {

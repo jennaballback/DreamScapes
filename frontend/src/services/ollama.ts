@@ -9,7 +9,7 @@ export interface InterpretationResponse {
     symbolicMeaning: string;
     emotionalInsight: string;
     culturalAnalysis: string;
-    reflectionPrompt: string;
+    reflectionPrompt: string; 
 }
 
 // CONFIRMED ENDPOINT: This is the local IP you verified with curl.

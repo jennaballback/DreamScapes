@@ -7,7 +7,7 @@ export interface UserContext {
     interpretationStyle?: "psychological" | "creative" | "spiritual";
     preferredTone?: string;
 }
-  
+   
 export interface DreamEntry {
     date: string;
     dreamText: string;

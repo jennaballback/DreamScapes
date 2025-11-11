@@ -4,7 +4,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import Constants from "expo-constants";
-   
+    
 /** Shape of the values you defined in app.json/app.config.js under expo.extra */
 interface FirebaseExtra {
   EXPO_PUBLIC_FIREBASE_API_KEY: string;
