@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../src/context/AuthContext";
-import { resetPassword } from "../src/services/auth";
+import { resetPassword } from "../src/ts/auth";
 
 export default function Forgot() {
   const router = useRouter();

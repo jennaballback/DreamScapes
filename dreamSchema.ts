@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // src/utils/dreamSchema.ts (CRUCIAL UPDATE)
-=======
-// src/utils/dreamSchema.ts
->>>>>>> 3c453604ff08fbb4067b9adffd2a6f309760e474
 
 export interface UserContext {
     id: string;
@@ -11,11 +7,7 @@ export interface UserContext {
     interpretationStyle?: "psychological" | "creative" | "spiritual";
     preferredTone?: string;
 }
-<<<<<<< HEAD
-   
-=======
-
->>>>>>> 3c453604ff08fbb4067b9adffd2a6f309760e474
+  
 export interface DreamEntry {
     date: string;
     dreamText: string;
@@ -33,7 +25,6 @@ export interface DreamEntry {
 
 export function buildDreamPrompt(user: UserContext, dream: DreamEntry): string {
     return `
-<<<<<<< HEAD
 You are a thoughtful and insightful dream interpreter who blends psychological understanding, symbolic analysis, and cross-cultural context.
 Avoid mystical or predictive claims. Focus on emotional meaning and reflection.
 
@@ -51,39 +42,13 @@ User Context for Analysis:
 - Interpretation Style: ${user.interpretationStyle ?? "psychological"}
 - Preferred Tone: ${user.preferredTone ?? "gentle and reflective"}
 - Cultural Background: ${user.culturalBackground ?? "General Western"}
-=======
-You are a thoughtful and insightful dream interpreter who blends psychological understanding with symbolic analysis.
-Avoid mystical or predictive claims. Focus on emotional meaning and reflection.
-
-User Context:
-- Interpretation Style: ${user.interpretationStyle ?? "psychological"}
-- Preferred Tone: ${user.preferredTone ?? "gentle and reflective"}
-- Age Range: ${user.ageRange ?? "N/A"}
-- Cultural Background: ${user.culturalBackground ?? "N/A"}
->>>>>>> 3c453604ff08fbb4067b9adffd2a6f309760e474
 
 Dream Entry (${dream.date}):
 "${dream.dreamText}"
 
 Emotions in Dream: ${dream.emotionsInDream.join(", ")}
-<<<<<<< HEAD
 Notes: ${dream.notes ?? "None"}
 
 Please generate the content for the five JSON sections, ensuring the entire output is wrapped in \`\`\`json...\`\`\`.
 `;
 }
-=======
-Mood Before Sleep: ${dream.moodBeforeSleep ?? "N/A"}
-Mood After Waking: ${dream.moodAfterWaking ?? "N/A"}
-Sleep Quality: ${dream.sleepQuality ?? "N/A"}
-Recurring Symbols: ${(dream.recurringSymbols ?? []).join(", ")}
-Notes: ${dream.notes ?? "None"}
-
-Please provide:
-1. A short summary of the dream.
-2. Symbolic meanings of key elements.
-3. Psychological or emotional insights.
-4. A reflective journaling prompt.
-  `;
-}
->>>>>>> 3c453604ff08fbb4067b9adffd2a6f309760e474

@@ -3,6 +3,7 @@ import home from "../icons/home.png";
 import arrow from "../icons/arrow.png";
 import save from "../icons/save.png";
 import search from "../icons/search.png"
+import plus from "../icons/plus.png"
 
 
 export const icons = {
@@ -11,4 +12,5 @@ export const icons = {
     arrow,
     save,
     search,
+    plus,
 };

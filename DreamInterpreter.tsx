@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, ActivityIndicator, StyleSheet, ScrollView } from 'react-native';
 import { collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, Unsubscribe } from 'firebase/firestore';
@@ -9,7 +8,7 @@ import { processDream } from '../src/services/dreamServices';
 import { UserContext, DreamEntry } from '../src/utils/dreamSchema';
 import { InterpretationResponse } from '../src/services/ollama';
 // -----------------------------------------------------------------
- 
+
 // --- HELPER FUNCTION: Safely get summary for history display ---
 // This handles both old plain text responses and new structured JSON responses.
 const getEntrySummary = (responseText: string): string => {
@@ -153,44 +152,11 @@ export default function DreamChatScreen() {
       setLlmResponse(null); // Clear successful response
       // Catch error thrown from ollama.ts (connection/parsing failure)
       setErrorText(error.message || "An issue occurred during analysis or saving to Firebase.");
-=======
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
-import { processDream } from "@/src/services/dreamServices";
-
-export default function DreamInterpreter({ dreamText, onInterpretation }) {
-  const [loading, setLoading] = useState(false);
-  const [interpretation, setInterpretation] = useState("");
-
-  const handleInterpret = async () => {
-    if (!dreamText.trim()) return alert("Please enter a dream first.");
-    setLoading(true);
-
-    try {
-      const userContext = {
-        id: "anonymous_dreamer",
-        interpretationStyle: "psychological",
-        preferredTone: "warm and reflective",
-      };
-      const dream = {
-        id: "",
-        userId: "anonymous_dreamer",
-        dreamText,
-      };
-
-      const responseText = await processDream(userContext, dream);
-      setInterpretation(responseText);
-      onInterpretation(responseText); // pass up to parent
-    } catch (error) {
-      setInterpretation("⚠️ Error generating interpretation.");
-      console.error(error);
->>>>>>> 3c453604ff08fbb4067b9adffd2a6f309760e474
     } finally {
       setLoading(false);
     }
   };
 
-<<<<<<< HEAD
   const currentUserId = user ? user.uid : 'anonymous_dreamer';
   const hasHistory = history.length > 0;
 
@@ -328,32 +294,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#fffbe0',
   },
 });
-=======
-  return (
-    <View className="mt-6">
-      <TouchableOpacity
-        className={`rounded-full py-4 ${loading ? "bg-blue-300" : "bg-blue-500"}`}
-        disabled={loading}
-        onPress={handleInterpret}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text className="text-center text-white text-lg font-semibold">
-            Interpret Dream
-          </Text>
-        )}
-      </TouchableOpacity>
-
-      {interpretation ? (
-        <View className="mt-4 bg-blue-50 border border-blue-200 rounded-2xl p-5">
-          <Text className="text-lg font-semibold text-blue-700 mb-2">
-            Interpretation
-          </Text>
-          <Text className="text-gray-700 leading-6">{interpretation}</Text>
-        </View>
-      ) : null}
-    </View>
-  );
-}
->>>>>>> 3c453604ff08fbb4067b9adffd2a6f309760e474
