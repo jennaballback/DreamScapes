@@ -2,17 +2,17 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "baseUrl": ".", 
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],  
-      "nanoid/non-secure": ["src/shims/nanoid-non-secure"]
+      "@/*": ["src/*"],
+      "nanoid/non-secure": ["src/shims/nanoid-non-secure.ts"]
     }
   },
   "include": [
-    "**/*.ts", 
-    "**/*.tsx", 
-    ".expo/types/**/*.ts", 
-    "expo-env.d.ts", 
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
     "nativewind-env.d.ts"
   ]
 }

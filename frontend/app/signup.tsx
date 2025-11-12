@@ -1,92 +1,276 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
-import { Link, useRouter } from "expo-router";
-import { useAuth } from "../src/context/AuthContext";
-import { signUpWithEmail } from "../src/ts/auth";
-import type { InterpretationPref } from "../src/types/UserProfile";
+// app/signup.tsx
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import { useRouter, Link } from "expo-router";
+import { createUser } from "../src/services/dbAuth"; // <- from the file we wrote
 
-export default function SignUp() {
+export default function Signup() {
   const router = useRouter();
-  const { user } = useAuth();
-
   const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName]   = useState("");
-  const [username, setUsername]   = useState("");
-  const [email, setEmail]         = useState("");
-  const [password, setPassword]   = useState("");
-  const [confirm, setConfirm]     = useState("");
-  const [interpretationPreference, setInterpretationPreference] =
-    useState<InterpretationPref>("psychological");
-  const [loading, setLoading]     = useState(false);
+  const [lastName,  setLastName]  = useState("");
+  const [username,  setUsername]  = useState("");
+  const [email,     setEmail]     = useState("");
+  const [password,  setPassword]  = useState("");
+  const [confirm,   setConfirm]   = useState("");
+  const [loading,   setLoading]   = useState(false);
 
-  useEffect(() => { if (user) router.replace("/"); }, [user]);
+  async function handleSignup() {
+    if (!firstName || !lastName || !username || !email || !password) {
+      Alert.alert("Missing info", "Please fill out all fields.");
+      return;
+    }
+    if (password !== confirm) {
+      Alert.alert("Password mismatch", "Passwords do not match.");
+      return;
+    }
 
-  const valid =
-    firstName.trim() && lastName.trim() && username.trim() &&
-    email.trim() && password.length >= 6 && password === confirm;
-
-  const onSignUp = async () => {
-    if (!valid) return Alert.alert("Check your input", "Fill all fields; password ≥ 6 and matches.");
+    setLoading(true);
     try {
-      setLoading(true);
-      await signUpWithEmail(
-        email.trim(),
-        password,
-        firstName.trim(),
-        lastName.trim(),
-        username.trim(),
-        interpretationPreference
-      );
-      Alert.alert("Account created", "User + profile created."); // temp feedback
-  } catch (e: any) {
-    console.log("SIGNUP ERROR:", e);
-    Alert.alert("Sign up failed", e?.message ?? "Unknown error");
-  } finally {
-    setLoading(false);
+      await createUser({
+        firstName,
+        lastName,
+        username,
+        email,
+        password, // dev only
+        interpretationPreference: "psychological",
+      });
+
+      Alert.alert("Account created", "You can log in now.", [
+        { text: "OK", onPress: () => router.replace("/login") },
+      ]);
+    } catch (e: any) {
+      Alert.alert("Sign up failed", e?.message ?? "Unable to create account.");
+    } finally {
+      setLoading(false);
+    }
   }
-  };
 
   return (
-    <View style={{ flex:1, padding:24, justifyContent:"center", gap:12 }}>
-      <Text style={{ fontSize:28, fontWeight:"700" }}>Create your account</Text>
+    <View className="flex-1 bg-white px-6 py-10">
+      <Text className="text-3xl font-bold mb-8">Create account</Text>
 
-      <TextInput placeholder="First name" value={firstName} onChangeText={setFirstName}
-        style={{ borderWidth:1, borderRadius:12, padding:12 }} />
-      <TextInput placeholder="Last name" value={lastName} onChangeText={setLastName}
-        style={{ borderWidth:1, borderRadius:12, padding:12 }} />
-      <TextInput placeholder="Username" autoCapitalize="none" value={username} onChangeText={setUsername}
-        style={{ borderWidth:1, borderRadius:12, padding:12 }} />
-      <TextInput placeholder="Email" autoCapitalize="none" keyboardType="email-address"
-        value={email} onChangeText={setEmail} style={{ borderWidth:1, borderRadius:12, padding:12 }} />
-      <TextInput placeholder="Password (min 6)" secureTextEntry value={password} onChangeText={setPassword}
-        style={{ borderWidth:1, borderRadius:12, padding:12 }} />
-      <TextInput placeholder="Confirm password" secureTextEntry value={confirm} onChangeText={setConfirm}
-        style={{ borderWidth:1, borderRadius:12, padding:12 }} />
+      <Text className="mb-2 text-gray-700">First name</Text>
+      <TextInput
+        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
+        value={firstName}
+        onChangeText={setFirstName}
+        placeholder="Anna"
+      />
 
-      {/* Preference toggle */}
-      <View style={{ flexDirection:"row", gap:8, marginTop:4 }}>
-        <TouchableOpacity
-          onPress={() => setInterpretationPreference("psychological")}
-          style={{ padding:10, borderRadius:10,
-                   backgroundColor: interpretationPreference==="psychological" ? "#111827" : "#e5e7eb" }}>
-          <Text style={{ color: interpretationPreference==="psychological" ? "white" : "black" }}>
-            Psychological
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setInterpretationPreference("cultural_hindu")}
-          style={{ padding:10, borderRadius:10,
-                   backgroundColor: interpretationPreference==="cultural_hindu" ? "#111827" : "#e5e7eb" }}>
-          <Text style={{ color: interpretationPreference==="cultural_hindu" ? "white" : "black" }}>
-            Cultural (Hindu)
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <Text className="mb-2 text-gray-700">Last name</Text>
+      <TextInput
+        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
+        value={lastName}
+        onChangeText={setLastName}
+        placeholder="Brooks"
+      />
 
-      <TouchableOpacity onPress={onSignUp} disabled={loading}
-        style={{ backgroundColor:"#111827", padding:14, borderRadius:12, alignItems:"center", marginTop:8 }}>
-        <Text style={{ color:"white", fontWeight:"600" }}>{loading ? "Creating..." : "Sign Up"}</Text>
+      <Text className="mb-2 text-gray-700">Username</Text>
+      <TextInput
+        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
+        autoCapitalize="none"
+        value={username}
+        onChangeText={setUsername}
+        placeholder="annab"
+      />
+
+      <Text className="mb-2 text-gray-700">Email</Text>
+      <TextInput
+        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
+        autoCapitalize="none"
+        keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
+        placeholder="anna@example.com"
+      />
+
+      <Text className="mb-2 text-gray-700">Password</Text>
+      <TextInput
+        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+        placeholder="••••••••"
+      />
+
+      <Text className="mb-2 text-gray-700">Confirm password</Text>
+      <TextInput
+        className="border border-gray-300 rounded-xl px-4 py-3 mb-6"
+        secureTextEntry
+        value={confirm}
+        onChangeText={setConfirm}
+        placeholder="••••••••"
+      />
+
+      <TouchableOpacity
+        disabled={loading}
+        onPress={handleSignup}
+        className={`w-full py-4 rounded-xl ${loading ? "bg-gray-400" : "bg-indigo-500"}`}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text className="text-white text-center font-semibold">Create account</Text>
+        )}
       </TouchableOpacity>
+
+      <View className="flex-row justify-center mt-6">
+        <Text className="text-gray-600 mr-2">Already have an account?</Text>
+        <Link href="/login" className="text-indigo-600 font-semibold">
+          Log in
+        </Link>
+      </View>
     </View>
   );
 }
+
+
+/*// app/signup.tsx
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import { useRouter } from "expo-router";
+import { createUser } from "../src/services/dbAuth"; // <-- correct relative path from /app
+
+export default function SignUp() {
+  const router = useRouter();
+
+  const [firstName, setFirstName]     = useState("");
+  const [lastName, setLastName]       = useState("");
+  const [username, setUsername]       = useState("");
+  const [email, setEmail]             = useState("");
+  const [password, setPassword]       = useState("");
+  const [confirm, setConfirm]         = useState("");
+  const [loading, setLoading]         = useState(false);
+  const [error, setError]             = useState<string | null>(null);
+
+  const onSubmit = async () => {
+    setError(null);
+
+    // basic validation
+    if (!firstName || !lastName || !username || !email || !password || !confirm) {
+      setError("Please fill out all fields.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+    if (password !== confirm) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const created = await createUser({
+        firstName,
+        lastName,
+        username,
+        email,
+        password, // DEV-ONLY; will be replaced with Firebase Auth later
+      });
+
+      // minimal UX: toast/alert and go to Home tab
+      Alert.alert("Account created", `Welcome, ${created.firstName}!`);
+      router.replace("/"); // go Home (or router.replace("/login") if you want login next)
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to create account.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, padding: 24, gap: 12, backgroundColor: "white" }}>
+      <Text style={{ fontSize: 24, fontWeight: "700", marginBottom: 8 }}>Create account</Text>
+
+      {error ? (
+        <Text style={{ color: "crimson", marginBottom: 4 }}>{error}</Text>
+      ) : null}
+
+      <TextInput
+        placeholder="First name"
+        autoCapitalize="words"
+        value={firstName}
+        onChangeText={setFirstName}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Last name"
+        autoCapitalize="words"
+        value={lastName}
+        onChangeText={setLastName}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Username"
+        autoCapitalize="none"
+        value={username}
+        onChangeText={setUsername}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Email"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Password"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Confirm password"
+        secureTextEntry
+        value={confirm}
+        onChangeText={setConfirm}
+        style={styles.input}
+      />
+
+      <TouchableOpacity
+        onPress={onSubmit}
+        disabled={loading}
+        style={[
+          styles.button,
+          { opacity: loading ? 0.6 : 1 },
+        ]}
+      >
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Sign Up</Text>}
+      </TouchableOpacity>
+
+      <Text style={{ textAlign: "center", marginTop: 8, opacity: 0.7 }}>
+        By signing up you agree to our totally real terms 💜
+      </Text>
+    </View>
+  );
+}
+
+const styles = {
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+    backgroundColor: "#fff",
+  },
+  button: {
+    backgroundColor: "#111827",
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    marginTop: 6,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "700" as const,
+    fontSize: 16,
+  },
+};
+*/
