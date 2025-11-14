@@ -1,110 +1,140 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useAuth } from "@/src/context/AuthContext";
-import { useRouter } from 'expo-router';
-import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
-import { db } from "@/src/firebase";
+// app/(tabs)/profile.tsx
+import React, { useEffect, useState } from "react";
+import {View, Text, Image, FlatList, TouchableOpacity, ActivityIndicator, ListRenderItem,} from "react-native";
+import { useRouter } from "expo-router";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../src/firebase";
+import { useDbAuth as useAuth } from "../../src/context/AuthContext";
 
-const StatItem = ({ label, value }) => (
+// ---- Types ----
+type DreamRow = {
+  id: string;
+  title?: string;
+  text?: string;
+  createdAt?: string | number | Date;
+  userId?: string;
+};
+
+type StatItemProps = {
+  label: string;
+  value: string | number;
+};
+
+// Small stat pill
+const StatItem = ({ label, value }: StatItemProps) => (
   <View className="items-center mr-4">
     <Text className="text-lg font-bold">{value}</Text>
     <Text className="text-gray-500 text-sm">{label}</Text>
   </View>
 );
 
+// ---- Screen ----
 const ProfileScreen = () => {
   const router = useRouter();
-  const { user } = useAuth(); 
+  const { user } = useAuth();
 
-  const [dreams, setDreams] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ entries: 0, friends: 11 });
+  const [dreams, setDreams] = useState<DreamRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState<{ entries: number }>({ entries: 0 });
+
+  // Fetch current user's dreams
+  const fetchDreams = async () => {
+    if (!user) return; // not logged in (or dev context not set yet)
+    setLoading(true);
+    try {
+      // Adjust field name if your docs use a different one than "userId"
+      const q = query(collection(db, "dreams"), where("userId", "==", user.id ?? user.uid ?? user.email));
+      const snap = await getDocs(q);
+
+      const fetched: DreamRow[] = snap.docs.map((doc) => {
+        const data = doc.data() as Record<string, unknown>;
+        return {
+          id: doc.id,
+          title: (data.title as string) ?? undefined,
+          text: (data.text as string) ?? undefined,
+          createdAt: (data.createdAt as any) ?? undefined,
+          userId: (data.userId as string) ?? undefined,
+        };
+      });
+
+      setDreams(fetched);
+      setStats((prev) => ({ ...prev, entries: fetched.length }));
+    } catch (error) {
+      console.log("Error fetching dreams:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDreams = async () => {
-      try {
-        const q = query(
-          collection(db, "dream_entry"),
-          where("user", "==", "user/user001"), // adjust when we get the user data
-          orderBy("created_at", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        const fetched = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        setDreams(fetched);
-        setStats((prev) => ({ ...prev, entries: fetched.length }));
-      } catch (error) {
-        console.log("Error fetching dreams:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDreams();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
-  const renderItem = ({ item }) => (
+  // Typed renderItem for FlatList
+  const renderItem: ListRenderItem<DreamRow> = ({ item }) => (
     <TouchableOpacity
       className="mb-4 p-4 bg-blue-100 rounded-lg shadow"
       onPress={() => router.push(`/dreamentry/${item.id}`)}
     >
-      <Text className="text-gray-800 font-semibold" numberOfLines={1}>
-        {item.title || "Untitled Dream"}
+      <Text className="text-lg font-bold">
+        {item.title ?? "Untitled dream"}
       </Text>
-      <Text className="text-gray-500 mt-1" numberOfLines={2}>
-        {item.dream_text || "No description..."}
-      </Text>
+      {item.text ? (
+        <Text className="text-gray-600 mt-1" numberOfLines={2}>
+          {item.text}
+        </Text>
+      ) : null}
     </TouchableOpacity>
   );
 
-  if (loading) {
+  if (!user) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-100">
-        <ActivityIndicator size="large" color="#3B82F6" />
-        <Text className="mt-4 text-gray-600">Loading your dreams...</Text>
+      <View className="flex-1 items-center justify-center">
+        <Text>Please log in to view your profile.</Text>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-100 p-4 pt-12">
+    <View className="flex-1 px-4 py-6">
       {/* Header */}
-      <View className="flex-row items-center mb-4">
+      <View className="items-center mb-6">
         <Image
-          source={{ uri: 'https://placekitten.com/100/100' }}
-          className="w-16 h-16 rounded-full mr-4"
+          source={{ uri: user.photoURL ?? "https://i.pravatar.cc/120" }}
+          style={{ width: 96, height: 96, borderRadius: 9999 }}
         />
-        <View>
-          <Text className="text-xl font-bold font-sans">Username</Text>
-        </View>
+        <Text className="mt-3 text-xl font-semibold">
+          {user.displayName ?? user.email ?? "User"}
+        </Text>
       </View>
-
-      {/* Bio / Description */}
-      <Text className="text-gray-700 mb-6">
-        This is a short bio about the user. It can span multiple lines and gives some context about the journal owner.
-      </Text>
 
       {/* Stats */}
-      <View className="flex-row justify-around mt-2 mb-4">
+      <View className="flex-row mb-4">
         <StatItem label="Entries" value={stats.entries} />
-        <StatItem label="Friends" value={stats.friends} />
+        {/* Add more StatItem components as you like */}
       </View>
 
-      {/* Dream Entries */}
-      <FlatList
-        data={dreams}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <Text className="text-gray-500 text-center mt-10">
-            You haven’t logged any dreams yet.
-          </Text>
-        }
-      />
+      {/* List */}
+      {loading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator />
+        </View>
+      ) : (
+        <FlatList<DreamRow>
+          data={dreams}
+          keyExtractor={(d) => d.id}
+          renderItem={renderItem}
+          onRefresh={fetchDreams}
+          refreshing={loading}
+          ListEmptyComponent={
+            <Text className="text-center text-gray-500 mt-10">
+              No dreams yet.
+            </Text>
+          }
+          contentContainerStyle={{ paddingBottom: 40 }}
+        />
+      )}
     </View>
   );
 };

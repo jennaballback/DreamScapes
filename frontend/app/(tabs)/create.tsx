@@ -2,8 +2,8 @@ import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/src/firebase";
-import { useAuth } from "@/src/context/AuthContext";
+import { db } from "../../src/firebase";
+import { useDbAuth as useAuth } from "../../src/context/AuthContext";
 import DreamInterpreter from "../DreamInterpreter";
 
 const Create = () => {
