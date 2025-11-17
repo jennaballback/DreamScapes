@@ -1,6 +1,56 @@
 // app/index.tsx
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { useRouter, Link } from "expo-router";
+
+export default function Landing() {
+  const router = useRouter();
+
+  return (
+    <View className="flex-1 bg-white items-center justify-center px-8">
+      {/* Title */}
+      <Text className="text-4xl font-extrabold text-[#0F1A3A] text-center mb-3">
+        DreamScapes
+      </Text>
+      <Text className="text-base text-gray-500 text-center mb-12">
+        Welcome! Choose an option to continue.
+      </Text>
+
+      {/* Primary CTAs */}
+      <TouchableOpacity
+        onPress={() => router.push("/login")}
+        className="w-full py-4 rounded-2xl bg-[#0F1A3A] mb-4"
+      >
+        <Text className="text-white text-center text-lg font-semibold">
+          Log in
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => router.push("/signup")}
+        className="w-full py-4 rounded-2xl bg-[#1f2d5c1A] border border-[#0F1A3A]"
+      >
+        <Text className="text-[#0F1A3A] text-center text-lg font-semibold">
+          Create new account
+        </Text>
+      </TouchableOpacity>
+
+      {/* Small inline link (optional) */}
+      <View className="flex-row mt-8">
+        <Text className="text-gray-500 mr-2">Already registered?</Text>
+        <Link href="/login" className="text-indigo-600 font-semibold">
+          Log in here
+        </Link>
+      </View>
+    </View>
+  );
+}
+
+
+
+/*// app/index.tsx
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
 export default function Welcome() {
@@ -28,4 +78,4 @@ export default function Welcome() {
       </TouchableOpacity>
     </View>
   );
-}
+}*/

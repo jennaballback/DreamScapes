@@ -91,7 +91,7 @@ const ProfileScreen = () => {
   if (!user) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text>Please log in to view your profile.</Text>
+        <Text className="text-blue-500">Please log in to view your profile.</Text>
       </View>
     );
   }
