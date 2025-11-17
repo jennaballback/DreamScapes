@@ -1,82 +1,96 @@
-import React, { createContext, useContext, useState, useMemo } from "react";
-import type { ReactNode } from "react";
-import { signInWithDb, DbUser } from "../services/dbAuth";
+// src/context/AuthContext.tsx
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
+import { useRouter } from "expo-router";
+import { signInWithDb, signUpWithDb, type DbUser } from "../services/dbAuth";
 
-type Ctx = {
-  user: DbUser | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => void;
-  initializing: boolean;
+type SignUpInput = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  interpretationPreference?: string;
 };
 
-const AuthContext = createContext<Ctx | undefined>(undefined);
+interface AuthContextType {
+  user: DbUser | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (data: SignUpInput) => Promise<void>;
+  signOut: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<DbUser | null>(null);
-  const [initializing, setInitializing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  // later you can restore a saved session here
+  useEffect(() => {
+    // placeholder
+  }, []);
 
   const signIn = async (email: string, password: string) => {
-    setInitializing(true);
     try {
+      setLoading(true);
       const u = await signInWithDb(email, password);
-      setUser(u);
+      setUser(u);                 // ✅ store user in context
+      router.replace("/(tabs)");  // ✅ go to main tabs after login
+    } catch (err: any) {
+      alert(err?.message ?? "Error logging in.");
     } finally {
-      setInitializing(false);
+      setLoading(false);
+    }
+  };
+
+  const signUp = async (data: SignUpInput) => {
+    try {
+      setLoading(true);
+      const u = await signUpWithDb(data);
+      setUser(u);                 // ✅ auto-login after sign-up
+      router.replace("/(tabs)");
+    } catch (err: any) {
+      alert(err?.message ?? "Error creating account.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const signOut = () => {
     setUser(null);
+    router.replace("/login");
   };
 
-  const value = useMemo(
-    () => ({ user, signIn, signOut, initializing }),
-    [user, initializing]
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        signIn,
+        signUp,
+        signOut,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// Main hook
 export function useDbAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useDbAuth must be used inside AuthProvider");
+  if (!ctx) {
+    throw new Error("useDbAuth must be used inside an AuthProvider");
+  }
   return ctx;
 }
 
-/*import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { onAuthStateChanged, signOut as fbSignOut, User } from "firebase/auth";
-//import { auth, db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
-
-interface AuthContextType {
-  user: User | null;
-  initializing: boolean;
-  signOut: () => Promise<void>;
-}
-
-// Create the context
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Provider component
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [initializing, setInitializing] = useState(true);
-
-  const value = useMemo(
-    () => ({
-      user,
-      initializing,
-      signOut: async () => {}, // placeholder while Auth is disabled
-    }),
-    [user, initializing]
-  );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-// Hook to access the context anywhere
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used inside an AuthProvider");
-  return context;
-};*/
+// Optional alias if anything still imports useAuth()
+export const useAuth = useDbAuth;

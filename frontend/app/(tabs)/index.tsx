@@ -22,7 +22,7 @@ export default function Landing() {
         className="w-full py-4 rounded-2xl bg-[#0F1A3A] mb-4"
       >
         <Text className="text-white text-center text-lg font-semibold">
-          Log in
+          Login
         </Text>
       </TouchableOpacity>
 
@@ -34,14 +34,6 @@ export default function Landing() {
           Create new account
         </Text>
       </TouchableOpacity>
-
-      {/* Small inline link (optional) */}
-      <View className="flex-row mt-8">
-        <Text className="text-gray-500 mr-2">Already registered?</Text>
-        <Link href="/login" className="text-indigo-600 font-semibold">
-          Log in here
-        </Link>
-      </View>
     </View>
   );
 }
