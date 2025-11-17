@@ -1,7 +1,5 @@
 // frontend/src/ollama.ts
-
-// ✅ Import your new helper and types
-import { buildDreamPrompt, UserContext, DreamEntry } from '@/src/utils/dreamSchema';
+import { buildDreamPrompt, UserContext, DreamEntry } from '@/utils/dreamSchema';
 
 // CONFIRMED ENDPOINT: This is the local IP you verified with curl.
 // NOTE: If your local IP changes (e.g., after reconnecting to Wi-Fi), you must update this number!
