@@ -1,13 +1,12 @@
-// frontend/src/services/dreamService.ts
+// src/services/ollama.ts
+import { buildDreamPrompt, UserContext, DreamEntry } from "../utils/dreamSchema";
 
-import { interpretDream } from "./ollama"; 
-import { UserContext, DreamEntry } from "../utils/dreamSchema";
-
-export async function processDream(
+export async function interpretDream(
   user: UserContext,
   dream: DreamEntry
 ): Promise<string> {
-  const result = await interpretDream(user, dream);
-  console.log("Dream interpretation result:", result);
-  return result;
+  const prompt = buildDreamPrompt(user, dream);  // or just use dream.text if you prefer
+  // TODO: call your real model/server here; returning a stub for now:
+  return `(${user.interpretationStyle}) ${prompt.slice(0, 200)}`;
 }
+export { interpretDream as processDream };

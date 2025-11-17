@@ -1,24 +1,9 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-<<<<<<< HEAD
-import Constants from "expo-constants";
-    
-/** Shape of the values you defined in app.json/app.config.js under expo.extra */
-interface FirebaseExtra {
-  EXPO_PUBLIC_FIREBASE_API_KEY: string;
-  EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: string;
-  EXPO_PUBLIC_FIREBASE_PROJECT_ID: string;
-  EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: string; // may be *.firebasestorage.app or *.appspot.com
-  EXPO_PUBLIC_FIREBASE_SENDER_ID: string;
-  EXPO_PUBLIC_FIREBASE_APP_ID: string;
-  EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID?: string;
-}
-=======
 import { getStorage } from "firebase/storage";
 
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
->>>>>>> 3c453604ff08fbb4067b9adffd2a6f309760e474
 
 // TODO: Replace the following with your app's Firebase configuration
 const firebaseConfig = {
