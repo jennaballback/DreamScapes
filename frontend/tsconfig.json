@@ -3,9 +3,14 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": ".",
+    "jsx": "react-jsx",
     "paths": {
-      "@/*": ["src/*"],
-      "nanoid/non-secure": ["src/shims/nanoid-non-secure.ts"]
+      "@/*": [
+        "src/*"
+      ],
+      "nanoid/non-secure": [
+        "src/shims/nanoid-non-secure.ts"
+      ]
     }
   },
   "include": [

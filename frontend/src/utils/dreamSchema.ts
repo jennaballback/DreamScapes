@@ -7,6 +7,7 @@ export interface UserContext {
     interpretationStyle?: "psychological" | "creative" | "spiritual";
     preferredTone?: string;
 }
+
 export interface DreamEntry {
     date: string;
     dreamText: string;
@@ -14,14 +15,18 @@ export interface DreamEntry {
     moodBeforeSleep?: string;
     timestamp: any;
     moodAfterWaking?: string;
-    response: string;
-    userId: string;
-    id: string;
     sleepQuality?: string;
     recurringSymbols?: string[];
     notes?: string;
+    response?: string;
+    userId: string;
+    id: string;
 }
 
+/**
+ * Builds a structured prompt to send to the Ollama LLM.
+ * Instructs the LLM to return the dream interpretation in the ✨ / 🎶 / ❤️ / 🌍 / ⚠️ format.
+ */
 export function buildDreamPrompt(user: UserContext, dream: DreamEntry): string {
     return `
 You are a thoughtful and insightful dream interpreter who blends psychological understanding with symbolic analysis.
@@ -43,10 +48,13 @@ Sleep Quality: ${dream.sleepQuality ?? "N/A"}
 Recurring Symbols: ${(dream.recurringSymbols ?? []).join(", ")}
 Notes: ${dream.notes ?? "None"}
 
-Please provide:
-1. A short summary of the dream.
-2. Symbolic meanings of key elements.
-3. Psychological or emotional insights.
-4. A reflective journaling prompt.
-  `;
+Please format your response using these labeled sections exactly as shown:
+✨ Dream Summary
+🎶 Symbolic Meaning
+❤️ Emotional Insight
+🌍 Cultural Analysis
+⚠️ Reflection Prompt
+
+Your response **MUST** contain all five sections listed below in the exact order and with the exact labels. Do not include any extra punctuation (like colons or dots) after the label text.
+`;
 }

@@ -1,4 +1,4 @@
-// src/services/ollama.ts
+// src/services/dreamServices.ts
 import { buildDreamPrompt, UserContext, DreamEntry } from "../utils/dreamSchema";
 
 export async function interpretDream(
