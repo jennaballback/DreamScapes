@@ -72,7 +72,6 @@ export default function DreamInterpreter({
       const label = parts[i]?.trim();
       let content = parts[i + 1]?.trim() ?? ""; // Get the raw content
 
-      // 🐛 FIX: Clean up any leading punctuation (colons, dots, asterisks)
       // This handles the extra colon/dots/asterisks that often appear at the start of the content section
       content = content.replace(/^[:\.\*]+\s*/, '');
 
