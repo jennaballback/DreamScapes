@@ -1,12 +1,20 @@
 // app/(tabs)/profile.tsx
 import React, { useEffect, useState } from "react";
-import {View, Text, Image, FlatList, TouchableOpacity, ActivityIndicator, ListRenderItem,} from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  ListRenderItem,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../src/firebase";
 import { useDbAuth as useAuth } from "../../src/context/AuthContext";
 
-// ---- Types ----
+// A single dream row as used by the profile screen list
 type DreamRow = {
   id: string;
   title?: string;
@@ -28,7 +36,6 @@ const StatItem = ({ label, value }: StatItemProps) => (
   </View>
 );
 
-// ---- Screen ----
 const ProfileScreen = () => {
   const router = useRouter();
   const { user } = useAuth();
@@ -37,22 +44,33 @@ const ProfileScreen = () => {
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<{ entries: number }>({ entries: 0 });
 
-  // Fetch current user's dreams
+  // Fetch dreams belonging only to the current user
   const fetchDreams = async () => {
-    if (!user) return; // not logged in (or dev context not set yet)
+    if (!user || !user.id) return;
+
     setLoading(true);
     try {
-      // Adjust field name if your docs use a different one than "userId"
-      const q = query(collection(db, "dreams"), where("userId", "==", user.id ?? user.uid ?? user.email));
-      const snap = await getDocs(q);
+      const ownerId = user.id;
 
-      const fetched: DreamRow[] = snap.docs.map((doc) => {
-        const data = doc.data() as Record<string, unknown>;
+      // IMPORTANT:
+      //  - use the same collection name you use when creating dreams ("dream_entry")
+      //  - filter by userId so we only get this user's entries
+      const qRef = query(
+        collection(db, "dream_entry"),
+        where("userId", "==", ownerId)
+      );
+
+      const snap = await getDocs(qRef);
+
+      const fetched: DreamRow[] = snap.docs.map((docSnap) => {
+        const data = docSnap.data() as Record<string, unknown>;
         return {
-          id: doc.id,
+          id: docSnap.id,
           title: (data.title as string) ?? undefined,
-          text: (data.text as string) ?? undefined,
-          createdAt: (data.createdAt as any) ?? undefined,
+          // In Create screen this field is called "dream_text"
+          text: (data.dream_text as string) ?? undefined,
+          // In Create screen this field is called "created_at"
+          createdAt: (data.created_at as any) ?? undefined,
           userId: (data.userId as string) ?? undefined,
         };
       });
@@ -66,12 +84,12 @@ const ProfileScreen = () => {
     }
   };
 
+  // Refetch when user changes (or first mounts)
   useEffect(() => {
     fetchDreams();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // Typed renderItem for FlatList
   const renderItem: ListRenderItem<DreamRow> = ({ item }) => (
     <TouchableOpacity
       className="mb-4 p-4 bg-blue-100 rounded-lg shadow"
@@ -91,31 +109,77 @@ const ProfileScreen = () => {
   if (!user) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text className="text-blue-500">Please log in to view your profile.</Text>
+        <Text className="text-blue-500">
+          Please log in to view your profile.
+        </Text>
       </View>
     );
   }
+
+  // ---- Safe user fields (no password) ----
+  const u: any = user;
+  const rawPhotoURL: string | undefined = u.photoURL;
+
+  // Only use http/https URLs as "real" photos on web.
+  const safePhotoURL =
+    typeof rawPhotoURL === "string" &&
+    (rawPhotoURL.startsWith("http://") || rawPhotoURL.startsWith("https://"))
+      ? rawPhotoURL
+      : null;
+
+  const firstName: string | undefined = u.firstName;
+  const lastName: string | undefined = u.lastName;
+
+  const usernameToShow: string =
+    (typeof u.username === "string" && u.username.length > 0
+      ? u.username
+      : u.displayName) ||
+    (u.email ? u.email.split("@")[0] : "User");
+
+  const fullNameToShow: string =
+    firstName || lastName
+      ? `${firstName ?? ""} ${lastName ?? ""}`.trim()
+      : u.email ?? "";
+
+  const initials =
+    `${(firstName?.[0] ?? "").toUpperCase()}${(lastName?.[0] ?? "").toUpperCase()}` ||
+    usernameToShow[0]?.toUpperCase() ||
+    "?";
 
   return (
     <View className="flex-1 px-4 py-6">
       {/* Header */}
       <View className="items-center mb-6">
-        <Image
-          source={{ uri: user.photoURL ?? "https://i.pravatar.cc/120" }}
-          style={{ width: 96, height: 96, borderRadius: 9999 }}
-        />
-        <Text className="mt-3 text-xl font-semibold">
-          {user.displayName ?? user.email ?? "User"}
-        </Text>
+        {/* Profile picture circle */}
+        <View className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 items-center justify-center">
+          {safePhotoURL ? (
+            <Image
+              source={{ uri: safePhotoURL }}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
+          ) : (
+            <Text className="text-3xl font-bold text-slate-600">
+              {initials}
+            </Text>
+          )}
+        </View>
+
+        {/* Username (immediately under the picture) */}
+        <Text className="mt-3 text-xl font-semibold">{usernameToShow}</Text>
+
+        {/* First + last name under username */}
+        {fullNameToShow ? (
+          <Text className="text-gray-600">{fullNameToShow}</Text>
+        ) : null}
       </View>
 
       {/* Stats */}
       <View className="flex-row mb-4">
         <StatItem label="Entries" value={stats.entries} />
-        {/* Add more StatItem components as you like */}
       </View>
 
-      {/* List */}
+      {/* Dream list (filtered to this user via userId) */}
       {loading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator />
@@ -140,3 +204,4 @@ const ProfileScreen = () => {
 };
 
 export default ProfileScreen;
+

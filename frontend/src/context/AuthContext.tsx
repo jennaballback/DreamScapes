@@ -9,19 +9,18 @@ import React, {
 import { useRouter } from "expo-router";
 import { signInWithDb, signUpWithDb, type DbUser } from "../services/dbAuth";
 
-type SignUpInput = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  interpretationPreference?: string;
-};
-
 interface AuthContextType {
   user: DbUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (data: SignUpInput) => Promise<void>;
+  signUp: (data: {
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    password: string;
+    photoUri?: string;  // local URI from ImagePicker
+  }) => Promise<void>;
   signOut: () => void;
 }
 
@@ -32,32 +31,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // later you can restore a saved session here
   useEffect(() => {
-    // placeholder
+    // later: restore session if you want
   }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
       const u = await signInWithDb(email, password);
-      setUser(u);                 // ✅ store user in context
-      router.replace("/(tabs)");  // ✅ go to main tabs after login
+      setUser(u);
+      router.replace("/(tabs)");
     } catch (err: any) {
+      console.error("Sign in error:", err);
       alert(err?.message ?? "Error logging in.");
     } finally {
       setLoading(false);
     }
   };
 
-  const signUp = async (data: SignUpInput) => {
+  const signUp = async (data: {
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    password: string;
+    photoUri?: string;
+  }) => {
+    setLoading(true);
     try {
-      setLoading(true);
       const u = await signUpWithDb(data);
-      setUser(u);                 // ✅ auto-login after sign-up
+      setUser(u);
       router.replace("/(tabs)");
     } catch (err: any) {
+      console.error("Sign up error:", err);
       alert(err?.message ?? "Error creating account.");
+      throw err; // so the signup screen can also react if it wants
     } finally {
       setLoading(false);
     }
@@ -83,14 +91,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Main hook
 export function useDbAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useDbAuth must be used inside an AuthProvider");
-  }
+  if (!ctx) throw new Error("useDbAuth must be used inside an AuthProvider");
   return ctx;
 }
 
-// Optional alias if anything still imports useAuth()
 export const useAuth = useDbAuth;

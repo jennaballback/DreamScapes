@@ -7,15 +7,11 @@ import "./global.css"; // IMPORTANT
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="dreamentry/[id]"
-          options={{ headerShown: false }}
-        />
+      <Stack initialRouteName="index">
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ title: "Log in", headerShown: false }} />
+        <Stack.Screen name="signup" options={{ title: "Sign up", headerShown: false }} />
       </Stack>
     </AuthProvider>
   );
