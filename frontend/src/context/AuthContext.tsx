@@ -22,6 +22,8 @@ interface AuthContextType {
     photoUri?: string;  // local URI from ImagePicker
   }) => Promise<void>;
   signOut: () => void;
+
+  updateUserProfileInContext: (partial: Partial<DbUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -76,6 +78,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.replace("/login");
   };
 
+  const updateUserProfileInContext = (partial: Partial<DbUser>) => {
+    setUser((prev) => (prev ? { ...prev, ...partial } : prev));
+  };
+
+
   return (
     <AuthContext.Provider
       value={{
@@ -84,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         signOut,
+        updateUserProfileInContext,
       }}
     >
       {children}

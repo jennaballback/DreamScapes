@@ -1,4 +1,4 @@
-// app/(tabs)/create.tsx (or wherever this screen lives)
+// app/(tabs)/create.tsx
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import { db } from "../../src/firebase";
 import { useDbAuth as useAuth } from "../../src/context/AuthContext";
 import DreamInterpreter from "../DreamInterpreter";
 
-// Mood tag options for quick selection
+// Mood tag options
 const MOOD_TAGS = [
   "Happy",
   "Anxious",
@@ -29,22 +29,36 @@ const MOOD_TAGS = [
   "Peaceful",
 ];
 
+// Dream Type options
+const DREAM_TYPE_TAGS = [
+  "Nightmare",
+  "Recurring",
+  "Lucid",
+  "Vivid",
+  "Stress Dream",
+  "Surreal",
+];
+
 const Create = () => {
   const router = useRouter();
+  const { user, initializing } = useAuth();
 
-  // Get auth state and current user
-  const { initializing, user } = useAuth();
-
-  const [addData, setAddData] = useState("");
-  const [addTitle, setAddTitle] = useState("");
+  const [dreamDate, setDreamDate] = useState("");    // date of the dream
+  const [addTitle, setAddTitle] = useState("");      // title of dream
+  const [addData, setAddData] = useState("");        // description of dream
   const [loading, setLoading] = useState(false);
+
   const [interpretation, setInterpretation] = useState<string>("");
-
+  
+  // Mood tag states
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
-
-  // State for custom mood entry
   const [showOtherInput, setShowOtherInput] = useState(false);
   const [otherMood, setOtherMood] = useState("");
+
+  // Dream type tags state
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [showOtherTypeInput, setShowOtherTypeInput] = useState(false);
+  const [otherType, setOtherType] = useState("");
 
   const tableName = { tName: "dream_entry" };
 
@@ -67,11 +81,28 @@ const Create = () => {
     setShowOtherInput(false);
   };
 
+  // Toggle selection of a preset dream type tag
+  const toggleType = (tag: string) => {
+    if (selectedTypes.includes(tag)) {
+      setSelectedTypes(selectedTypes.filter((t) => t !== tag));
+    } else {
+      setSelectedTypes([...selectedTypes, tag]);
+    }
+  };
+
+  // Add a custom typed dream type
+  const handleAddCustomType = () => {
+    const trimmed = otherType.trim();
+    if (!trimmed) return;
+
+    setSelectedTypes([...selectedTypes, trimmed]);
+    setOtherType("");
+    setShowOtherTypeInput(false);
+  };
+
   // Save dream entry to Firestore
   const addField = async () => {
     if (!addData.trim()) return;
-
-    // Require a logged-in user so we can link the entry to a specific user
     if (!user || !user.id) {
       alert("You must be logged in to save a dream entry.");
       return;
@@ -85,19 +116,27 @@ const Create = () => {
         interpretation: interpretation || "N/A",
         created_at: serverTimestamp(),
 
+        // New: when the user says the dream happened
+        dream_date: dreamDate || null,
+
         // Link this dream to the specific user
-        userId: user.id, // main field used to relate dreams to users
-        user: user.id,   // optional field for compatibility if older code expects "user"
+        userId: user.id,
+        user: user.id, // optional compatibility field
 
         public: true,
+
+        // Tags
         moods: selectedMoods || [],
+        dreamTypes: selectedTypes || [],
       });
 
-      // Reset form fields after successful save
-      setAddData("");
+      // Reset form fields
+      setDreamDate("");
       setAddTitle("");
+      setAddData("");
       setInterpretation("");
       setSelectedMoods([]);
+      setSelectedTypes([]);
 
       router.back();
     } catch (err) {
@@ -107,7 +146,6 @@ const Create = () => {
     }
   };
 
-  // While auth is initializing, avoid rendering the screen
   if (initializing) return null;
 
   return (
@@ -120,8 +158,8 @@ const Create = () => {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           flexGrow: 1,
-          justifyContent: "center",
-          paddingBottom: 30,
+          justifyContent: "flex-start",
+          paddingBottom: 140,
         }}
       >
         <View className="px-6 py-8">
@@ -136,37 +174,22 @@ const Create = () => {
             <View className="w-10" />
           </View>
 
-          {/* Title Input */}
+          {/* Date of Dream */}
           <View className="mb-4">
+            <Text className="text-gray-700 font-semibold mb-1">
+              Date of Dream
+            </Text>
             <TextInput
-              className="text-lg text-gray-800 font-semibold border-b border-gray-300 pb-2"
-              placeholder="Untitled"
+              className="border border-gray-300 rounded-xl px-3 py-2 text-gray-800 bg-white"
+              placeholder="MM/DD/YYYY"
               placeholderTextColor="#9ca3af"
-              value={addTitle}
-              onChangeText={setAddTitle}
+              value={dreamDate}
+              onChangeText={setDreamDate}
             />
           </View>
-
-          {/* Dream Text Input */}
-          <View className="bg-white shadow-lg rounded-2xl p-5 min-h-[250px] mb-6">
-            <TextInput
-              className="text-base text-gray-800 leading-6"
-              placeholder="Start writing your dream..."
-              placeholderTextColor="#9ca3af"
-              multiline
-              value={addData}
-              onChangeText={setAddData}
-            />
-          </View>
-
-          {/* Dream Interpreter (this component should render the "Interpret Dream" button) */}
-          <DreamInterpreter
-            dreamText={addData}
-            onInterpretation={(result) => setInterpretation(result)}
-          />
 
           {/* Mood Tags Section */}
-          <View className="mb-6 mt-6">
+          <View className="mb-6">
             <Text className="text-lg font-semibold text-gray-800 mb-3">
               Mood Tags
             </Text>
@@ -193,7 +216,7 @@ const Create = () => {
                 );
               })}
 
-              {/* "Other" mood option */}
+              {/* OTHER option */}
               <TouchableOpacity
                 onPress={() => setShowOtherInput(true)}
                 className="px-4 py-2 rounded-full bg-gray-300 mr-2 mb-2"
@@ -206,7 +229,7 @@ const Create = () => {
             {showOtherInput && (
               <View className="mt-3">
                 <TextInput
-                  className="border border-gray-300 rounded-xl px-3 py-2 text-gray-800"
+                  className="border border-gray-300 rounded-xl px-3 py-2 text-gray-800 bg-white"
                   placeholder="Enter custom mood..."
                   placeholderTextColor="#9ca3af"
                   value={otherMood}
@@ -224,10 +247,110 @@ const Create = () => {
               </View>
             )}
           </View>
+          
+          {/* Dream Type Section */}
+          <View className="mb-6">
+            <Text className="text-lg font-semibold text-gray-800 mb-3">
+              Dream Type
+            </Text>
 
-          {/* Save Entry Button */}
+            <View className="flex-row flex-wrap">
+              {DREAM_TYPE_TAGS.map((tag) => {
+                const selected = selectedTypes.includes(tag);
+                return (
+                  <TouchableOpacity
+                    key={tag}
+                    onPress={() => toggleType(tag)}
+                    className={`px-4 py-2 rounded-full mr-2 mb-2 ${
+                      selected ? "bg-purple-500" : "bg-gray-200"
+                    }`}
+                  >
+                    <Text
+                      className={`${
+                        selected ? "text-white" : "text-gray-700"
+                      } font-medium`}
+                    >
+                      {tag}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+
+              {/* Dream Type OTHER option */}
+              <TouchableOpacity
+                onPress={() => setShowOtherTypeInput(true)}
+                className="px-4 py-2 rounded-full bg-gray-300 mr-2 mb-2"
+              >
+                <Text className="text-gray-800 font-medium">Other +</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Custom Dream Type Input */}
+            {showOtherTypeInput && (
+              <View className="mt-3">
+                <TextInput
+                  className="border border-gray-300 rounded-xl px-3 py-2 text-gray-800 bg-white"
+                  placeholder="Enter custom dream type..."
+                  placeholderTextColor="#9ca3af"
+                  value={otherType}
+                  onChangeText={setOtherType}
+                />
+
+                <TouchableOpacity
+                  onPress={handleAddCustomType}
+                  className="bg-purple-500 px-4 py-2 rounded-full mt-2"
+                >
+                  <Text className="text-white font-semibold text-center">
+                    Add Dream Type
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+
+          {/* Title Input */}
+          <View className="mb-4">
+            <Text className="text-gray-700 font-semibold mb-1">
+              Title of Dream
+            </Text>
+            <TextInput
+              className="text-lg text-gray-800 font-semibold border-b border-gray-300 pb-2 bg-transparent"
+              placeholder="Untitled"
+              placeholderTextColor="#9ca3af"
+              value={addTitle}
+              onChangeText={setAddTitle}
+            />
+          </View>
+
+          {/* Description Input */}
+          <View className="mb-6">
+            <Text className="text-gray-700 font-semibold mb-1">
+              Description of Dream
+            </Text>
+
+            <View className="bg-white shadow-lg rounded-2xl p-4 min-h-[200px]">
+              <TextInput
+                className="text-base text-gray-800 leading-6 w-full h-full"
+                placeholder="Start writing your dream..."
+                placeholderTextColor="#9ca3af"
+                multiline
+                value={addData}
+                onChangeText={setAddData}
+                style={{ textAlignVertical: "top" }} // ensures text starts at the top on Android + Web
+              />
+            </View>
+          </View>
+
+
+          {/* Interpret Dream (now after mood tags) */}
+          <DreamInterpreter
+            dreamText={addData}
+            onInterpretation={(result) => setInterpretation(result)}
+          />
+
+          {/* Save Button */}
           <TouchableOpacity
-            className={`mt-4 rounded-full py-4 ${
+            className={`mt-6 rounded-full py-4 ${
               loading ? "bg-blue-300" : "bg-blue-500"
             }`}
             disabled={loading}
