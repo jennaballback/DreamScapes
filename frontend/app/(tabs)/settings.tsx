@@ -232,7 +232,7 @@ const SettingsScreen = () => {
   return (
     <ScrollView
       className="flex-1 bg-[#f6f7fb] px-4 py-6"
-      contentContainerStyle={{ paddingBottom: 40 }}
+      contentContainerStyle={{ paddingBottom: 100 }}
     >
       {/* Page heading */}
       <Text className="text-center text-xs tracking-[3px] text-gray-400 mb-1">
@@ -401,7 +401,7 @@ const SettingsScreen = () => {
               Larger text
             </Text>
             <Text className="text-xs text-gray-500">
-              Make dream entries and UI text easier to read.
+              Future option to make dream entries and UI text easier to read.
             </Text>
           </View>
           <Switch value={largeText} onValueChange={setLargeText} />

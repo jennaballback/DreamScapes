@@ -7,12 +7,11 @@ import "./global.css"; // IMPORTANT
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <Stack initialRouteName="index">
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ title: "Log in", headerShown: false }} />
-        <Stack.Screen name="signup" options={{ title: "Sign up", headerShown: false }} />
-      </Stack>
+      <Stack
+        screenOptions={{
+          headerShown: false,   // Hides the default header everywhere 🔥
+        }}
+      />
     </AuthProvider>
   );
 }

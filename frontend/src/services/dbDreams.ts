@@ -18,7 +18,7 @@ import {
       createdAt: Date; // or whatever type you use
     }
   ): Promise<DreamEntry> {
-    const docRef = await addDoc(collection(db, "dreamEntries"), {
+    const docRef = await addDoc(collection(db, "dream_entries"), {
       userId,                     //  connect dream to user
       title: data.title,
       content: data.content,

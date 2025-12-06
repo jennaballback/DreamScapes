@@ -1,5 +1,11 @@
 // app/(tabs)/profile.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  ComponentProps,
+  FC,
+} from "react";
 import {
   View,
   Text,
@@ -36,6 +42,8 @@ const DREAM_TYPE_TAGS = [
   "Surreal",
 ];
 
+type DateFilter = "all" | "7" | "30" | "365";
+
 // ---------------- Types ----------------
 
 type DreamRow = {
@@ -54,17 +62,13 @@ type StatItemProps = {
   value: string | number;
 };
 
-type DateFilter = "all" | "7" | "30" | "365";
-
-// Wrapper that allows web hover events without TypeScript errors
-type HoverableViewProps = React.ComponentProps<typeof View> & {
+// Wrapper that allows web hover events without TS errors
+type HoverableViewProps = ComponentProps<typeof View> & {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 };
 
-const HoverableView: React.FC<HoverableViewProps> = (props) => {
-  return <View {...props} />;
-};
+const HoverableView: FC<HoverableViewProps> = (props) => <View {...props} />;
 
 // Small stat pill
 const StatItem = ({ label, value }: StatItemProps) => (
@@ -77,7 +81,6 @@ const StatItem = ({ label, value }: StatItemProps) => (
 // Helper to turn a dream's date into a JS Date
 function getDreamDateForFilter(d: DreamRow): Date | null {
   try {
-    // Prefer dreamDate string if present
     if (d.dreamDate) {
       return new Date(d.dreamDate);
     }
@@ -121,25 +124,37 @@ const ProfileScreen = () => {
       const u: any = user;
       const ownerId = u.id ?? u.uid ?? u.email;
 
-      // Match collection name used when creating dream entries
-      const q = query(
+      const qRef = query(
         collection(db, "dream_entry"),
         where("userId", "==", ownerId)
       );
-      const snap = await getDocs(q);
+      const snap = await getDocs(qRef);
 
-      const fetched: DreamRow[] = snap.docs.map((doc) => {
-        const data = doc.data() as any;
+      const fetched: DreamRow[] = snap.docs.map((docSnap) => {
+        const data = docSnap.data() as any;
 
         return {
-          id: doc.id,
+          id: docSnap.id,
           title: (data.title as string) ?? undefined,
-          text: (data.dream_text as string) ?? undefined,
-          dreamDate: (data.dream_date as string) ?? undefined,
-          createdAt: data.created_at ?? undefined,
+          // support both dream_text and dreamText
+          text:
+            (data.dream_text as string) ??
+            (data.dreamText as string) ??
+            undefined,
+          // support dream_date/date/created_at
+          dreamDate: (data.dream_date as string) ?? (data.date as string),
+          createdAt: data.created_at ?? data.createdAt ?? undefined,
           userId: (data.userId as string) ?? data.user ?? undefined,
-          moods: (data.moods as string[]) ?? [],
-          dreamTypes: (data.dreamTypes as string[]) ?? [],
+          // support moods/emotionsInDream
+          moods:
+            (data.moods as string[]) ??
+            (data.emotionsInDream as string[]) ??
+            [],
+          // support dreamTypes/dream_types
+          dreamTypes:
+            (data.dreamTypes as string[]) ??
+            (data.dream_types as string[]) ??
+            [],
         };
       });
 
@@ -181,7 +196,13 @@ const ProfileScreen = () => {
     const now = new Date();
 
     const maxAgeDays =
-      dateFilter === "7" ? 7 : dateFilter === "30" ? 30 : dateFilter === "365" ? 365 : null;
+      dateFilter === "7"
+        ? 7
+        : dateFilter === "30"
+        ? 30
+        : dateFilter === "365"
+        ? 365
+        : null;
 
     return dreams
       .filter((d) => {
@@ -194,7 +215,7 @@ const ProfileScreen = () => {
           if (diffDays > maxAgeDays) return false;
         }
 
-        // Mood filter: require intersection if filters selected
+        // Mood filter
         if (selectedMoodFilters.length > 0) {
           const moods = d.moods ?? [];
           const hasMatch = moods.some((m) => selectedMoodFilters.includes(m));
@@ -204,7 +225,9 @@ const ProfileScreen = () => {
         // Dream type filter
         if (selectedTypeFilters.length > 0) {
           const types = d.dreamTypes ?? [];
-          const hasMatch = types.some((t) => selectedTypeFilters.includes(t));
+          const hasMatch = types.some((t) =>
+            selectedTypeFilters.includes(t)
+          );
           if (!hasMatch) return false;
         }
 
@@ -216,13 +239,13 @@ const ProfileScreen = () => {
         if (!da && !db) return 0;
         if (!da) return 1;
         if (!db) return -1;
-        // Newest first
         return db.getTime() - da.getTime();
       });
   }, [dreams, dateFilter, selectedMoodFilters, selectedTypeFilters]);
 
+  // Render one dream row
   const renderItem: ListRenderItem<DreamRow> = ({ item }) => {
-    // Decide which date to show: dream_date first, then created_at fallback
+    // Decide which date to show
     let displayDate = "";
 
     if (item.dreamDate) {
@@ -237,7 +260,7 @@ const ProfileScreen = () => {
             : new Date(item.createdAt);
 
         displayDate = d.toLocaleDateString();
-      } catch (e) {
+      } catch {
         displayDate = "";
       }
     }
@@ -252,13 +275,12 @@ const ProfileScreen = () => {
           <Text className="text-lg font-bold flex-1 mr-3">
             {item.title ?? "Untitled dream"}
           </Text>
-
           {displayDate ? (
             <Text className="text-gray-600 text-sm">{displayDate}</Text>
           ) : null}
         </View>
 
-        {/* Dream preview text */}
+        {/* Preview text */}
         {item.text ? (
           <Text className="text-gray-600 mt-1" numberOfLines={2}>
             {item.text}
@@ -303,7 +325,9 @@ const ProfileScreen = () => {
       : u.email ?? "";
 
   const initials =
-    `${(firstName?.[0] ?? "").toUpperCase()}${(lastName?.[0] ?? "").toUpperCase()}` ||
+    `${(firstName?.[0] ?? "").toUpperCase()}${(
+      lastName?.[0] ?? ""
+    ).toUpperCase()}` ||
     usernameToShow[0]?.toUpperCase() ||
     "?";
 
@@ -500,7 +524,7 @@ const ProfileScreen = () => {
       {/* Divider */}
       <View className="h-[1px] bg-gray-200 mb-4" />
 
-      {/* Dream list (filtered) */}
+      {/* Dream list (current user's dreams only) */}
       {loading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator />
@@ -514,10 +538,10 @@ const ProfileScreen = () => {
           refreshing={loading}
           ListEmptyComponent={
             <Text className="text-center text-gray-500 mt-10">
-              No dreams match your filters.
+              No dreams yet.
             </Text>
           }
-          contentContainerStyle={{ paddingBottom: 40 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
         />
       )}
     </View>
