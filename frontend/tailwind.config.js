@@ -8,6 +8,15 @@ module.exports = {
         colors: {
           primary: '#030014',
           secondary: '#151312',
+          buttonText: '#364153', //gray-700
+          buttonBackground: '#f3f4f6',//gray-100
+          buttonBorder: '#d1d5dc', //gray-300
+
+          subText: '#4a5565', //gray-600
+          
+          postBackground: '#dbeafe', //blue-100
+          appBackground: '#ffffff', //entire App background white
+
           light: {
             100: '#D6C6FF',
             200: '#A8B5DB',

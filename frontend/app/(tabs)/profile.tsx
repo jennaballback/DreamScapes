@@ -267,7 +267,7 @@ const ProfileScreen = () => {
 
     return (
       <TouchableOpacity
-        className="mb-4 p-4 bg-blue-100 rounded-lg shadow"
+        className="mb-4 p-4 bg-postBackground rounded-lg shadow"
         onPress={() => router.push(`/dreamentry/${item.id}`)}
       >
         {/* Top row: title on the left, date on the right */}
@@ -276,13 +276,13 @@ const ProfileScreen = () => {
             {item.title ?? "Untitled dream"}
           </Text>
           {displayDate ? (
-            <Text className="text-gray-600 text-sm">{displayDate}</Text>
+            <Text className="text-subText text-sm">{displayDate}</Text>
           ) : null}
         </View>
 
         {/* Preview text */}
         {item.text ? (
-          <Text className="text-gray-600 mt-1" numberOfLines={2}>
+          <Text className="text-subText mt-1" numberOfLines={2}>
             {item.text}
           </Text>
         ) : null}
@@ -337,7 +337,7 @@ const ProfileScreen = () => {
     selectedTypeFilters.length > 0;
 
   return (
-    <View className="flex-1 bg-white px-4 py-6">
+    <View className="flex-1 bg-barColor px-4 py-6">
       {/* Top action bar: Filter (left) and Sign Out (right) */}
       <View className="w-full flex-row justify-between items-center px-4 mt-4">
         {/* Filter Button with hover tooltip (web) */}
@@ -359,7 +359,7 @@ const ProfileScreen = () => {
 
           {showTooltip && (
             <View className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-black/80 px-2 py-1 rounded-md">
-              <Text className="text-white text-xs">Filter</Text>
+              <Text className="text-appBackground text-xs">Filter</Text>
             </View>
           )}
         </HoverableView>
@@ -367,9 +367,9 @@ const ProfileScreen = () => {
         {/* Sign Out Button */}
         <TouchableOpacity
           onPress={signOut}
-          className="px-4 py-2 rounded-full bg-gray-100 border border-gray-300"
+          className="px-4 py-2 rounded-full bg-buttonBackground border border-buttonBorder"
         >
-          <Text className="text-gray-700 font-medium">Sign Out</Text>
+          <Text className="text-buttonText font-medium">Sign Out</Text>
         </TouchableOpacity>
       </View>
 
