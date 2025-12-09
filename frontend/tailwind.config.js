@@ -18,10 +18,10 @@ module.exports = {
           appBackground: '#ffffff', //entire App background white
 
           light: {
-            100: '#D6C6FF',
+            100: '#D6C6FF', //purple-100 probably
             200: '#A8B5DB',
             300: '#9CA4AB',
-            500: '#ad46ff',
+            500: '#ad46ff', //purple-500
           },
           dark:{
             100: '#221f3d',
