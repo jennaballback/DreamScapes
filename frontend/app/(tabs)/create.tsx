@@ -150,7 +150,7 @@ const Create = () => {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gradient-to-b from-blue-100 to-white"
+      className="flex-1 bg-gradient-to-b from-postBackground to-appBackground"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView
@@ -202,12 +202,12 @@ const Create = () => {
                     key={tag}
                     onPress={() => toggleMood(tag)}
                     className={`px-4 py-2 rounded-full mr-2 mb-2 ${
-                      selected ? "bg-blue-500" : "bg-gray-200"
+                      selected ? "bg-light-500" : "bg-light-100"
                     }`}
                   >
                     <Text
                       className={`${
-                        selected ? "text-white" : "text-gray-700"
+                        selected ? "text-white" : "text-buttonText"
                       } font-medium`}
                     >
                       {tag}
@@ -219,7 +219,7 @@ const Create = () => {
               {/* OTHER option */}
               <TouchableOpacity
                 onPress={() => setShowOtherInput(true)}
-                className="px-4 py-2 rounded-full bg-gray-300 mr-2 mb-2"
+                className="px-4 py-2 rounded-full bg-light-100 mr-2 mb-2"
               >
                 <Text className="text-gray-800 font-medium">Other +</Text>
               </TouchableOpacity>
@@ -262,7 +262,7 @@ const Create = () => {
                     key={tag}
                     onPress={() => toggleType(tag)}
                     className={`px-4 py-2 rounded-full mr-2 mb-2 ${
-                      selected ? "bg-purple-500" : "bg-gray-200"
+                      selected ? "bg-purple-500" : "bg-light-100"
                     }`}
                   >
                     <Text
@@ -279,7 +279,7 @@ const Create = () => {
               {/* Dream Type OTHER option */}
               <TouchableOpacity
                 onPress={() => setShowOtherTypeInput(true)}
-                className="px-4 py-2 rounded-full bg-gray-300 mr-2 mb-2"
+                className="px-4 py-2 rounded-full bg-light-100 mr-2 mb-2"
               >
                 <Text className="text-gray-800 font-medium">Other +</Text>
               </TouchableOpacity>
